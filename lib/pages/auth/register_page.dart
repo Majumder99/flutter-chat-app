@@ -1,8 +1,10 @@
-// ignore_for_file: prefer_const_constructors
+// ignore_for_file: prefer_const_constructors, use_build_context_synchronously
 
 import "package:flutter/gestures.dart";
 import "package:flutter/material.dart";
+import "package:flutter_chat_app/helper/helper_function.dart";
 import "package:flutter_chat_app/pages/auth/login_page.dart";
+import "package:flutter_chat_app/pages/home_page.dart";
 import "package:flutter_chat_app/widgets/widgets.dart";
 
 import "../../service/auth_services.dart";
@@ -146,14 +148,15 @@ class _RegisterPageState extends State<RegisterPage> {
       });
       await authService
           .registerUserWithEmailandPassword(fullName, email, password)
-          .then((value) {
+          .then((value) async {
         if (value == true) {
           //saving the shared preference state
-          setState(() {
-            _isLoading = false;
-          });
+          await HelperFunctions.saveUserLoggedInStatus(true);
+          await HelperFunctions.saveUserFullName(fullName);
+          await HelperFunctions.saveUserEmail(email);
+          nextScreenReplacement(context, const HomePage());
         } else {
-          showSnackBar(context, value, Colors.red)
+          showSnackBar(context, value, Colors.red);
           setState(() {
             _isLoading = false;
           });
