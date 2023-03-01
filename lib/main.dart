@@ -51,6 +51,9 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
         title: 'Chat App',
+        theme: ThemeData(
+            primaryColor: Constant().primaryColor,
+            scaffoldBackgroundColor: Colors.white),
         debugShowCheckedModeBanner: false,
         home: _isSignedIn ? const HomePage() : const LoginPage());
   }
