@@ -1,5 +1,7 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
+//shared preferences mane holo localstorage in js.. mane locally kichu data store kore rakha
+
 class HelperFunctions {
   //keys
   static String userLoggedInKey = "LOGGEDIN";
