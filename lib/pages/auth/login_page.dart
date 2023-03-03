@@ -58,20 +58,22 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                       Image.asset("assets/login.png"),
                       TextFormField(
-                          decoration: textInputDecoration.copyWith(
-                            labelText: "Email",
-                            prefixIcon: Icon(Icons.email,
-                                color: Theme.of(context).primaryColor),
-                          ),
-                          onChanged: (value) => setState(() {
-                                email = value;
-                              }),
-                          validator: (value) {
-                            RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
-                                    .hasMatch(value!)
-                                ? null
-                                : "Please provide a valid email";
-                          }),
+                        decoration: textInputDecoration.copyWith(
+                          labelText: "Email",
+                          prefixIcon: Icon(Icons.email,
+                              color: Theme.of(context).primaryColor),
+                        ),
+                        onChanged: (value) => setState(() {
+                          email = value;
+                        }),
+                        validator: (value) {
+                          return RegExp(
+                                      r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+                                  .hasMatch(value!)
+                              ? null
+                              : "Please provide a valid email";
+                        },
+                      ),
                       SizedBox(
                         height: 15,
                       ),
@@ -97,7 +99,7 @@ class _LoginPageState extends State<LoginPage> {
                               elevation: 0,
                               shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(30))),
-                          child: Text("Sing in",
+                          child: Text("Sign in",
                               style:
                                   TextStyle(color: Colors.white, fontSize: 16)),
                           onPressed: () {
@@ -140,15 +142,25 @@ class _LoginPageState extends State<LoginPage> {
           .then((value) async {
         if (value == true) {
           //saving the shared preference state
-          QuerySnapshot snapshot = await DatabaseServices(
-                  uid: FirebaseAuth.instance.currentUser!.uid)
-              .gettingUserData(email);
+          QuerySnapshot<Map<String, dynamic>>? snapshot =
+              await DatabaseServices(
+                      uid: FirebaseAuth.instance.currentUser?.uid)
+                  .gettingUserData(email);
           //saving the values to our shared preferences
-          await HelperFunctions.saveUserLoggedInStatus(true);
-          await HelperFunctions.saveUserEmail(email);
-          await HelperFunctions.saveUserFullName(snapshot.docs[0]['fullName']);
-          print(value);
-          nextScreenReplacement(context, const HomePage());
+          if (snapshot != null && snapshot.docs.isNotEmpty) {
+            await HelperFunctions.saveUserLoggedInStatus(true);
+            await HelperFunctions.saveUserEmail(email);
+            await HelperFunctions.saveUserFullName(
+                snapshot.docs[0]['fullName'] as String);
+            nextScreenReplacement(context, const HomePage());
+          } else {
+            showSnackBar(context, 'Failed to get user data', Colors.red);
+            setState(() {
+              _isLoading = false;
+            });
+          }
+
+          // print(value);
         } else {
           showSnackBar(context, value, Colors.red);
           setState(() {

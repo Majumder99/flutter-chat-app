@@ -21,7 +21,8 @@ class AuthService {
       }
     } on FirebaseAuthException catch (e) {
       // ignore: avoid_print
-      return e.message;
+      print(e);
+      return e;
     }
   }
 
@@ -46,7 +47,7 @@ class AuthService {
   }
 
   //signout
-  Future singOut() async {
+  Future signOut() async {
     try {
       await HelperFunctions.saveUserLoggedInStatus(false);
       await HelperFunctions.saveUserEmail("");

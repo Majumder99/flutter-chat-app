@@ -39,6 +39,8 @@ class _MyAppState extends State<MyApp> {
     getUserLoggedInStatus();
   }
 
+  //this is how we can check if someone is logged in or not
+
   getUserLoggedInStatus() async {
     await HelperFunctions.getUserLoggedInStatus().then((value) {
       if (value != null) {
