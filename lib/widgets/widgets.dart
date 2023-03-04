@@ -1,3 +1,4 @@
+import "package:firebase_auth/firebase_auth.dart";
 import "package:flutter/material.dart";
 
 // common functions gulan eikhane thakbe
@@ -26,15 +27,13 @@ void nextScreenReplacement(context, page) {
 }
 
 //showssnackbar
-void showSnackBar(context, message, color) {
+void showSnackBar(BuildContext context, dynamic message, Color color) {
   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
     content: Text(
-      message,
-      style: TextStyle(fontSize: 14),
+      message is FirebaseAuthException ? message.message! : message.toString(),
+      style: const TextStyle(fontSize: 15),
     ),
     backgroundColor: color,
-    duration: Duration(seconds: 2),
-    action:
-        SnackBarAction(label: "OK", onPressed: () {}, textColor: Colors.white),
+    duration: const Duration(seconds: 3),
   ));
 }

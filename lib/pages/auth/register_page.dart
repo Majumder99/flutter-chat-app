@@ -108,7 +108,7 @@ class _RegisterPageState extends State<RegisterPage> {
                               elevation: 0,
                               shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(30))),
-                          child: Text("Sing in",
+                          child: Text("Register",
                               style:
                                   TextStyle(color: Colors.white, fontSize: 16)),
                           onPressed: () {

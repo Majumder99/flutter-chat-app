@@ -138,31 +138,23 @@ class _LoginPageState extends State<LoginPage> {
         _isLoading = true;
       });
       await authService
-          .loginUserWithEmailAndPassword(email, password)
+          .loginWithUserNameandPassword(email, password)
           .then((value) async {
         if (value == true) {
-          //saving the shared preference state
-          QuerySnapshot<Map<String, dynamic>>? snapshot =
-              await DatabaseServices(
-                      uid: FirebaseAuth.instance.currentUser?.uid)
-                  .gettingUserData(email);
-          //saving the values to our shared preferences
-          if (snapshot != null && snapshot.docs.isNotEmpty) {
-            await HelperFunctions.saveUserLoggedInStatus(true);
-            await HelperFunctions.saveUserEmail(email);
-            await HelperFunctions.saveUserFullName(
-                snapshot.docs[0]['fullName'] as String);
-            nextScreenReplacement(context, const HomePage());
-          } else {
-            showSnackBar(context, 'Failed to get user data', Colors.red);
-            setState(() {
-              _isLoading = false;
-            });
+          QuerySnapshot? snapshot = await DatabaseServices(
+                  uid: FirebaseAuth.instance.currentUser!.uid)
+              .gettingUserData(email);
+          // saving the values to our shared preferences
+          print("hello $snapshot");
+          await HelperFunctions.saveUserLoggedInStatus(true);
+          await HelperFunctions.saveUserEmail(email);
+          String? fullName = snapshot?.docs[0]['fullName'];
+          if (fullName != null) {
+            await HelperFunctions.saveUserFullName(fullName);
           }
-
-          // print(value);
+          nextScreenReplacement(context, const HomePage());
         } else {
-          showSnackBar(context, value, Colors.red);
+          showSnackBar(context, Colors.red, value);
           setState(() {
             _isLoading = false;
           });
