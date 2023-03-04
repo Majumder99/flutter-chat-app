@@ -10,6 +10,7 @@ import "package:flutter_chat_app/shared/Constant.dart";
 import "package:flutter_chat_app/widgets/widgets.dart";
 
 import "../service/database_services.dart";
+import "../widgets/group_tile.dart";
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -30,6 +31,15 @@ class _HomePageState extends State<HomePage> {
     gettingUserData();
   }
 
+  // string manipulation
+  String getId(String res) {
+    return res.substring(0, res.indexOf("_"));
+  }
+
+  String getName(String res) {
+    return res.substring(res.indexOf("_") + 1);
+  }
+
   gettingUserData() async {
     await HelperFunctions.getUserEmail().then((value) {
       setState(() {
@@ -41,9 +51,18 @@ class _HomePageState extends State<HomePage> {
         fullName = value!;
       });
     });
+    // getting the list of snapshots in our stream
+    await DatabaseServices(uid: FirebaseAuth.instance.currentUser!.uid)
+        .getUserGroups()
+        .then((snapshot) {
+      setState(() {
+        groups = snapshot;
+      });
+    });
   }
 
   AuthService authService = AuthService();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -276,10 +295,10 @@ class _HomePageState extends State<HomePage> {
                 itemCount: snapshot.data['groups'].length,
                 itemBuilder: (context, index) {
                   int reverseIndex = snapshot.data['groups'].length - index - 1;
-                  // return GroupTile(
-                  //     groupId: getId(snapshot.data['groups'][reverseIndex]),
-                  //     groupName: getName(snapshot.data['groups'][reverseIndex]),
-                  //     userName: snapshot.data['fullName']);
+                  return GroupTile(
+                      groupId: getId(snapshot.data['groups'][reverseIndex]),
+                      groupName: getName(snapshot.data['groups'][reverseIndex]),
+                      fullName: snapshot.data['fullName']);
                 },
               );
             } else {
@@ -289,11 +308,10 @@ class _HomePageState extends State<HomePage> {
             return noGroupWidget();
           }
         } else {
-          // return Center(
-          //   child: CircularProgressIndicator(
-          //       color: Theme.of(context).primaryColor),
-          // );
-          return noGroupWidget();
+          return Center(
+            child: CircularProgressIndicator(
+                color: Theme.of(context).primaryColor),
+          );
         }
       },
     );
